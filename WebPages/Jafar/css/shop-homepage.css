@@ -5,4 +5,20 @@
  */
 body {
   padding-top: 56px;
+  background:
+     url(sweettexture.jpg)    /* image */
+     top center / 200px 200px /* position / size */
+     no-repeat                /* repeat */
+     fixed                    /* attachment */
+     padding-box              /* origin */
+     content-box              /* clip */
+     black;                     /* color */
+}
+
+.card{
+  background-color: #0f0f0f
+} 
+
+.list-group-item{
+  background-color: #0f0f0f
 }
