@@ -130,3 +130,13 @@ h1, h2, h3, h4, h5, h6 {
 .blog-footer p:last-child {
   margin-bottom: 0;
 }
+
+
+#id_AboutMeMyPhoto {
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
+
+.ProfExperienceFont {
+  font-family: "Times New Roman", Times, serif;
+}
