@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Konstantinos Vasilas Personal Website/blog">
+    <meta name="author" content="Konstantinos Vasilas">
+
+    <!-- Styles -->
+    <!-- ============================================================================================== -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+
+
+    <title>Vasilas K.</title>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-12 text-center">
+                    <a class="text-center blog-header-logo text-dark" href="#">Vasilas Konstantinos </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav-scroller py-1 mb-2">
+            <nav class="nav d-flex justify-content-between">
+                <a class="p-2 text-muted" href="https://vassilas.github.io/">Main Page</a>
+                <a class="p-2 text-muted" href="https://vassilas.github.io/aboutme.html">About Me</a>
+                <a class="p-2 text-muted" href="https://vassilas.github.io/VasilasKonstantinosCV.html">My CV</a>
+                <a class="p-2 text-dark font-weight-bold" href="https://vassilas.github.io/articles.html">Articles</a>
+                <a class="p-2 text-muted" href="https://www.linkedin.com/in/konstantinos-vasilas/">My LinkedIn</a>
+                <a class="p-2 text-muted" href="https://github.com/vassilas">My Github</a>
+            </nav>
+        </div>
+
+        <br>
+        <div class="container">
+            <h2>Title: Bring your work db to your local machine</h2>
+            <br>
+            <p>To set up a MSSQL Server in Docker and run SQL scripts, we created a PowerShell script to automate the process. 
+                The script pulls the MSSQL Server Docker image, runs a container with the necessary environment variables, 
+                and waits for the server to initialize. It then copies SQL scripts into the container, which create a 
+                database and a table, and seed the table with sample data. Finally, the script prints the connection string 
+                needed to connect to the database, providing a streamlined way to set up and interact with a MSSQL Server in Docker.</p>
+
+            <h4>Extract the SQL script from BD</h4>
+            <p>
+                To prepare for deploying your database within a Docker container, you need to consolidate the scripts for creating the 
+                database schema and populating it with initial data into a single comprehensive script. Start by accessing your 
+                database to extract the script responsible for the creation of the database and its associated tables. 
+                This script typically includes commands for setting up the database, defining table structures, specifying primary 
+                and foreign keys, and establishing any necessary constraints or indexes. Once you have this script, proceed to 
+                retrieve the script containing the INSERT commands used to seed your database with initial data. These commands 
+                populate the tables with essential data required for your application's functionality. After obtaining both scripts, 
+                combine them into a single SQL file, for example, SchemaAndDataDev.sql. This unified script should begin with the 
+                database creation statements, followed by the table creation commands, and conclude with the INSERT commands to seed 
+                the data. By merging these scripts, you ensure that the entire database setup and initialization process can be 
+                executed seamlessly within a Docker container, facilitating a smooth deployment and consistent environment for your application. 
+            </p>
+
+<!-- ========================================================================================================================================== -->
+    <pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; ">
+    
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">-- Create the database</span>
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">CREATE</span> DATABASE TestDB;
+    GO
+    
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">-- Switch to the new database context</span>
+    USE TestDB;
+    GO
+    
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">-- Create the Users table</span>
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">CREATE</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">TABLE</span> Users (
+        UserID <span style="color: rgb(245, 171, 53); font-weight: 400;">INT</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">PRIMARY</span> KEY <span style="color: rgb(220, 198, 224); font-weight: 400;">IDENTITY</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;">1</span>,<span style="color: rgb(245, 171, 53); font-weight: 400;">1</span>),
+        UserName NVARCHAR(<span style="color: rgb(245, 171, 53); font-weight: 400;">50</span>) <span style="color: rgb(220, 198, 224); font-weight: 400;">NOT</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">NULL</span>,
+        UserEmail NVARCHAR(<span style="color: rgb(245, 171, 53); font-weight: 400;">50</span>) <span style="color: rgb(220, 198, 224); font-weight: 400;">NOT</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">NULL</span>
+    );
+    GO
+    
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">-- Insert sample data into the Users table</span>
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">INSERT</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">INTO</span> Users (UserName, UserEmail)
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">VALUES</span> (<span style="color: rgb(171, 227, 56); font-weight: 400;">'Alice'</span>, <span style="color: rgb(171, 227, 56); font-weight: 400;">'alice@example.com'</span>),
+            (<span style="color: rgb(171, 227, 56); font-weight: 400;">'Bob'</span>, <span style="color: rgb(171, 227, 56); font-weight: 400;">'bob@example.com'</span>),
+            (<span style="color: rgb(171, 227, 56); font-weight: 400;">'Charlie'</span>, <span style="color: rgb(171, 227, 56); font-weight: 400;">'charlie@example.com'</span>);
+    GO
+    </pre>
+<!-- ========================================================================================================================================== -->
+
+    <h4>Create and run the DB in Docker container</h4>
+    <p>
+        Ensure that Docker is installed on your device, as it is essential for running containers. To set up a Microsoft SQL Server Docker container, 
+        you will create a PowerShell script that performs several tasks sequentially. First, the script will pull the latest Microsoft SQL Server 
+        Docker image from the Docker repository. Once the image is downloaded, the script will run a new container instance with this image. 
+        Next, it will copy the SQL script, previously extracted and named SchemaAndDataDev.sql, into the running container. 
+        After copying the script, the PowerShell script will execute it within the container to create the database schema and insert the 
+        initial data. Finally, the script will output the connection string, which can be used to connect to the SQL Server instance within 
+        the Docker container. This connection string will typically include details like the server name, port number, and authentication credentials. 
+        By following these steps, you ensure a smooth and automated setup of your SQL Server environment within a Docker container.
+    </p>        
+
+            <!-- https://highlight.hohli.com/?language=powershell&theme=a11y-dark -->
+<!-- ========================================================================================================================================== -->
+    <pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; ">
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Define variables</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$imageName</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04"</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$containerName</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"mssql"</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$saPassword</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"YourStrong!Passw0rd"</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$schemaAndDataScript</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"SchemaAndDataDev.sql"</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$databaseName</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"TestDB"</span>
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Download the MSSQL Server Docker image</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Write-Host</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"Pulling MSSQL Server Docker image..."</span>
+    docker pull <span style="color: rgb(255, 160, 122); font-weight: 400;">$imageName</span>
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Run the Docker container</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Write-Host</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"Running MSSQL Server Docker container..."</span>
+    docker run <span style="color: rgb(245, 171, 53); font-weight: 400;">-e</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"ACCEPT_EULA=Y"</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">-e</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"SA_PASSWORD=<span style="color: rgb(255, 160, 122); font-weight: 400;">$saPassword</span>"</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">-p</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">1433</span>:<span style="color: rgb(245, 171, 53); font-weight: 400;">1433</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">--name</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$containerName</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">-d</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$imageName</span>
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Wait for the SQL Server to start</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Start-Sleep</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">-Seconds</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">30</span>
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Copy SQL scripts into the Docker container</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Write-Host</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"Copying SQL scripts into Docker container..."</span>
+    docker <span style="color: rgb(245, 171, 53); font-weight: 400;">cp</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$schemaAndDataScript</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$</span>{containerName}:/<span style="color: rgb(255, 160, 122); font-weight: 400;">$</span>{schemaAndDataScript}
+
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Execute the schemaAndDataScript script</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Write-Host</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"Executing schemaAndDataScript Sql script..."</span>
+    docker exec <span style="color: rgb(245, 171, 53); font-weight: 400;">-i</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$containerName</span> /opt/mssql<span style="color: rgb(245, 171, 53); font-weight: 400;">-tools</span>/bin/sqlcmd <span style="color: rgb(245, 171, 53); font-weight: 400;">-S</span> localhost <span style="color: rgb(245, 171, 53); font-weight: 400;">-U</span> SA <span style="color: rgb(245, 171, 53); font-weight: 400;">-P</span> <span style="color: rgb(255, 160, 122); font-weight: 400;">$saPassword</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">-i</span> /<span style="color: rgb(255, 160, 122); font-weight: 400;">$</span>{schemaAndDataScript}
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;"># Print the connection string</span>
+    <span style="color: rgb(255, 160, 122); font-weight: 400;">$connectionString</span> = <span style="color: rgb(171, 227, 56); font-weight: 400;">"Server=localhost,1433;Database=<span style="color: rgb(255, 160, 122); font-weight: 400;">$databaseName</span>;User Id=SA;Password=<span style="color: rgb(255, 160, 122); font-weight: 400;">$saPassword</span>;"</span>
+    <span style="color: rgb(245, 171, 53); font-weight: 400;">Write-Host</span> <span style="color: rgb(171, 227, 56); font-weight: 400;">"Your connection string is: <span style="color: rgb(255, 160, 122); font-weight: 400;">$connectionString</span>"</span>
+    </pre>
+<!-- ========================================================================================================================================== -->
+
+
+        
+        </div>
+        
+
+
+
+        
+    </div>
+
+    <!-- JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        Holder.addTheme('thumb', {
+            bg: '#55595c',
+            fg: '#eceeef',
+            text: 'Thumbnail'
+        });
+    </script>
+
+</body>
+
+</html>
