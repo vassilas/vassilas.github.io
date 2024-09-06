@@ -52,8 +52,24 @@
 
         <h3>Create the Initial Migration Script</h3>
 
+        <h3>Compare the generated Database with the Inital</h3>
+        Use the below tools
+        <ul>
+            <li>SQL Compare by redgate</li>
+            <li>OpenDBDiff [<a href="https://github.com/OpenDBDiff/OpenDBDiff">Link</a>]</li>
+        </ul>
+        <h3>Fix the differences and recreate the migration scripts</h3>
         <h3>Next migrations with code first approach</h3>
         
+
+        <h3>Adding the update command in your deployment piplines</h3>
+        <p>
+            the Update-Database command in Entity Framework does not run automatically when a merge occurs in version control.
+            The Update-Database command must be executed manually as part of the Entity Framework migrations process to apply any pending migrations to the database.
+            <br />
+            However, it is possible to automate this process (e.g., in CI/CD pipelines) by scripting the execution of migrations after a merge, but this would need to be set up explicitly. In normal development workflows, merging branches does not trigger Update-Database automatically.
+            If you need to ensure that migrations are always applied after a merge, you could add a script or a step in your development process that checks for pending migrations and applies them if necessary.
+        </p>
 
         <br><br>
         <h3>References</h3>
