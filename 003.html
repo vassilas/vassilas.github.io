@@ -47,18 +47,78 @@
         <h2>Title: DB First to Code First Using EF</h2>
         <br>
         <h3>Scaffolding the existing DB using EF Tools</h3>
+        The first step in migrating from a Database First to a Code First approach involves scaffolding your existing database. 
+        This process generates the initial set of entity classes (Models) and a DbContext class that mirror your current database 
+        schema. To begin, ensure that your project has the necessary Entity Framework Core packages installed. 
+        You can install these packages using the NuGet Package Manager Console with the following commands:    
+        
+        With the packages in place, you can utilize the Scaffold-DbContext command to reverse-engineer your database. 
+        Open the Package Manager Console in Visual Studio and execute:
 
+        <p>
+        Replace "YourConnectionString" with your actual database connection string, and YourDbContext with a suitable name for your context class. 
+        The -OutputDir Models parameter specifies that the generated classes will be placed in a Models directory, and the -DataAnnotations 
+        flag indicates that data annotation attributes will be used for model configuration.
+        </p>
+
+        <p>
+        After running the scaffold command, review the generated classes in the Models folder. Each class represents a table in your database, 
+        complete with properties that map to table columns. The YourDbContext.cs file is also generated, managing database connections and configurations. 
+        This file is crucial as it serves as the bridge between your entity classes and the database.
+        </p>
+        
+        <p>
+        It's important to handle sensitive information securely. Avoid hardcoding sensitive data like passwords in your connection string. 
+        Instead, use secure methods such as environment variables, configuration files, or user secrets to manage connection strings.
+        </p>
+        
         <h3>Edit the DbContext.cs file</h3>
+        <p>
+        Once the scaffolding is complete, you'll need to edit the DbContext.cs file to align it with best practices and prepare it for Code First migrations. 
+        Start by modifying the OnConfiguring method to remove any hardcoded connection strings. 
+        This encourages the use of dependency injection for supplying the connection string, enhancing security and flexibility.
+        </p>
+        
+        <p>
+        You should also clean up the OnModelCreating method within your DbContext class. 
+        Simplify the configurations by moving as much as possible to data annotations within your models. 
+        For more complex configurations that cannot be represented with data annotations, organize them using the Fluent 
+        API within the OnModelCreating method or separate configuration classes. This makes your code cleaner and easier to maintain.
+        </p>
+        
+        <p>
+        Additionally, remove any unnecessary code, such as scaffolding comments or regions that are not needed. 
+        Ensure that navigation properties and relationships between entities are correctly established to accurately represent the database schema.
+        </p>
 
         <h3>Create the Initial Migration Script</h3>
 
         <h3>Compare the generated Database with the Inital</h3>
-        Use the below tools
+        After creating the initial migration, it's important to compare the generated database schema with your original database to ensure they are identical. 
+        This step validates that your entity models and configurations accurately represent the existing database.
+        Use one of the below tools
         <ul>
             <li>SQL Compare by redgate</li>
             <li>OpenDBDiff [<a href="https://github.com/OpenDBDiff/OpenDBDiff">Link</a>]</li>
         </ul>
+        <p>
+        During the comparison, pay close attention to tables, columns, data types, constraints, and default values. 
+        Check for any missing or extra tables and columns, and ensure that data types match, including sizes and precision. 
+        Verify that primary keys, foreign keys, indexes, and unique constraints are correctly defined. 
+        Also, confirm that default constraints and computed columns are properly configured.
+        If you find discrepancies, adjust your entity models or Fluent API configurations to resolve them. 
+        </p>
+        
+        <p>
+        After making the necessary adjustments, regenerate and apply the migrations. 
+        Repeat the comparison process until the generated database schema matches the original database precisely.
+        </p>
         <h3>Fix the differences and recreate the migration scripts</h3>
+        Be aware that Check Constraint are not scaffolded with EF Core tool. 
+        This is a known Issue <a href="https://github.com/googleapis/dotnet-spanner-entity-framework/issues/8">Github open Issue</a>
+        EF Core supports defining check constraints when working code-first, but there is nothing in the scaffolding metadata 
+        that allows us to define this when generating code from the database. This means that when a database with existing 
+        CHECK constraints is scaffolded and the output is used to generate a new database, the CHECK constraints will not be included in the new database.
         <h3>Next migrations with code first approach</h3>
         
         
