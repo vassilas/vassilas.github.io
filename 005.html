@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Konstantinos Vasilas Personal Website/blog">
+    <meta name="author" content="Konstantinos Vasilas">
+
+    <!-- Styles -->
+    <!-- ============================================================================================== -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+
+
+    <title>Vasilas K.</title>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-12 text-center">
+                    <a class="text-center blog-header-logo text-dark" href="#">Vasilas Konstantinos </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav-scroller py-1 mb-2">
+            <nav class="nav d-flex justify-content-between">
+                <a class="p-2 text-muted" href="https://vassilas.github.io/">Main Page</a>
+                <a class="p-2 text-muted" href="https://vassilas.github.io/aboutme.html">About Me</a>
+                <a class="p-2 text-muted" href="https://vassilas.github.io/VasilasKonstantinosCV.html">My CV</a>
+                <a class="p-2 text-dark font-weight-bold" href="https://vassilas.github.io/articles.html">Articles</a>
+                <a class="p-2 text-muted" href="https://www.linkedin.com/in/konstantinos-vasilas/">My LinkedIn</a>
+                <a class="p-2 text-muted" href="https://github.com/vassilas">My Github</a>
+            </nav>
+        </div>
+
+        <br>
+        
+        <h2>Title: Understanding the "Result Pattern" in C#</h2>
+        <br>
+
+        <p>In many coding paradigms—especially functional and Domain-Driven Design (DDD)—you'll frequently see a “Result” (or “Either”) 
+            type used to represent the outcome of an operation. Instead of throwing exceptions for every potential failure or returning 
+            ambiguous null values, a Result type makes success or failure an explicit part of your method signatures.
+
+            This approach is sometimes called the Result Pattern, Railway-Oriented Programming, or a functional error-handling pattern. 
+            Although C# doesn't provide a built-in Result type, you can create your own or use libraries such as CSharpFunctionalExtensions, 
+            FluentResults, or LanguageExt.
+            
+            Below is an overview of how you might build and use a basic Result type in alignment with C# paradigms 
+            (object-oriented, functional style with LINQ, pattern matching, etc.).
+        </p>
+
+
+        <h3>Basic Structure of a Result Type</h3>
+        A minimalistic Result class usually encapsulates:
+        <ul>
+            <li>A status flag (e.g., IsSuccess).</li>
+            <li>A value (or values) if successful.</li>
+            <li>An error (or error details) if failed.</li>
+        </ul>
+        In many libraries, Result<T> is a generic type to hold success values. For example:
+<pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; "><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">class</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>
+{
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">bool</span> IsSuccess { <span style="color: rgb(220, 198, 224); font-weight: 400;">get</span>; }
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> Error { <span style="color: rgb(220, 198, 224); font-weight: 400;">get</span>; }
+
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">protected</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">bool</span> isSuccess, <span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> error</span>)</span>
+    {
+        IsSuccess = isSuccess;
+        Error = error;
+    }
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">// Factory methods for creating Results:</span>
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> Result <span style="color: rgb(0, 224, 224); font-weight: 400;">Success</span>()</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">new</span> Result(<span style="color: rgb(245, 171, 53); font-weight: 400;">true</span>, <span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>.Empty);
+    }
+
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> Result <span style="color: rgb(0, 224, 224); font-weight: 400;">Failure</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> error</span>)</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">new</span> Result(<span style="color: rgb(245, 171, 53); font-weight: 400;">false</span>, error);
+    }
+}
+
+<span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">class</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt; : <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>
+{
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> T Value { <span style="color: rgb(220, 198, 224); font-weight: 400;">get</span>; }
+
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">protected</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;">T <span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>, <span style="color: rgb(245, 171, 53); font-weight: 400;">bool</span> isSuccess, <span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> error</span>)
+        : <span style="color: rgb(0, 224, 224); font-weight: 400;">base</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;">isSuccess, error</span>)</span>
+    {
+        Value = <span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>;
+    }
+
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">Success</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;">T <span style="color: rgb(220, 198, 224); font-weight: 400;">value</span></span>)</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">new</span> Result&lt;T&gt;(<span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>, <span style="color: rgb(245, 171, 53); font-weight: 400;">true</span>, <span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>.Empty);
+    }
+
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">Failure</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> error</span>)</span>
+    {
+        <span style="color: rgb(212, 208, 171); font-weight: 400;">// We don't have a valid Value in a failure case, so pass default or throw if appropriate</span>
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">new</span> Result&lt;T&gt;(<span style="color: rgb(245, 171, 53); font-weight: 400;">default</span>!, <span style="color: rgb(245, 171, 53); font-weight: 400;">false</span>, error);
+    }
+}
+</pre>
+        
+        Notes on the design:
+        <ol>
+            <li><b>Immutability</b>: Properties are read-only, making the Result immutable once created (a common functional approach).</li>
+            <li><b>Static factory methods</b> (Success, Failure) provide a clear, discoverable API for creating new results.</li>
+        </ol>
+
+
+        <br>
+        <h3>Returning Result from Methods</h3>
+        When you implement a method that can either succeed or fail, you return Result or Result< T >:
+
+<pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; "><span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">GetUserNameById</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">int</span> userId</span>)</span>
+{
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (userId &lt;= <span style="color: rgb(245, 171, 53); font-weight: 400;">0</span>)
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>&gt;.Failure(<span style="color: rgb(171, 227, 56); font-weight: 400;">"Invalid user id."</span>);
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">// Simulate fetching a user from a data store</span>
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">var</span> userName = <span style="color: rgb(171, 227, 56); font-weight: 400;">"Alice"</span>; <span style="color: rgb(212, 208, 171); font-weight: 400;">// from database, for example</span>
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>&gt;.Success(userName);
+}
+</pre>
+        The caller must explicitly check IsSuccess before accessing the Value, making error handling more intentional:
+<pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; "><span style="color: rgb(220, 198, 224); font-weight: 400;">var</span> result = GetUserNameById(<span style="color: rgb(245, 171, 53); font-weight: 400;">-1</span>);
+
+<span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (!result.IsSuccess)
+{
+    Console.WriteLine(<span style="color: rgb(171, 227, 56); font-weight: 400;">$"Error: <span style="color: rgb(171, 227, 56); font-weight: 400;">{result.Error}</span>"</span>);
+}
+<span style="color: rgb(220, 198, 224); font-weight: 400;">else</span>
+{
+    Console.WriteLine(<span style="color: rgb(171, 227, 56); font-weight: 400;">$"Username: <span style="color: rgb(171, 227, 56); font-weight: 400;">{result.Value}</span>"</span>);
+}
+</pre>
+
+        This is fundamentally different from using exceptions or returning null, as it forces you to consider both success and failure paths.
+
+        <br><br>
+        <h3>Monadic / Functional Chaining (Railway-Oriented Programming)</h3>
+        One powerful aspect of returning Result is the ability to compose operations in a “railway-oriented” manner (a term popularized by functional programming). The core idea is:
+        <ol>
+            <li>If the current Result is a failure, short-circuit and keep returning a failure.</li>
+            <li>If the current Result is a success, keep passing the success value along.</li>
+        </ol>
+        You can implement extension methods like Bind (or OnSuccess) and OnFailure to create this fluent chain:
+<pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; "><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">class</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">ResultExtensions</span>
+{
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">// Accepts a function that transforms T -&gt; Result&lt;U&gt;</span>
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">U</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">Bind</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>, <span style="color: rgb(0, 224, 224); font-weight: 400;">U</span>&gt;(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">this</span> Result&lt;T&gt; result, Func&lt;T, Result&lt;U&gt;&gt; func</span>)</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (!result.IsSuccess)
+            <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;U&gt;.Failure(result.Error);
+
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> func(result.Value);
+    }
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">// Accepts an action if you want to do something only on success</span>
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">OnSuccess</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt;(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">this</span> Result&lt;T&gt; result, Action&lt;T&gt; action</span>)</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (result.IsSuccess)
+            action(result.Value);
+
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> result;
+    }
+
+    <span style="color: rgb(212, 208, 171); font-weight: 400;">// Accepts an action if you want to do something only on failure</span>
+    <span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">static</span> <span style="color: rgb(0, 224, 224); font-weight: 400;">Result</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">OnFailure</span>&lt;<span style="color: rgb(0, 224, 224); font-weight: 400;">T</span>&gt;(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">this</span> Result&lt;T&gt; result, Action&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">string</span>&gt; action</span>)</span>
+    {
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (!result.IsSuccess)
+            action(result.Error);
+
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> result;
+    }
+}
+</pre>
+        Example Usage:
+<pre style="font-family:monospace;color: rgb(248, 248, 242); background-color: rgb(43, 43, 43); font-weight: 400; "><span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">ParseNumber</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">string</span> input</span>)</span>
+{
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>.TryParse(input, <span style="color: rgb(220, 198, 224); font-weight: 400;">out</span> <span style="color: rgb(245, 171, 53); font-weight: 400;">int</span> <span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>))
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt;.Success(<span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>);
+
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt;.Failure(<span style="color: rgb(171, 227, 56); font-weight: 400;">$"'<span style="color: rgb(171, 227, 56); font-weight: 400;">{input}</span>' is not a valid integer."</span>);
+}
+
+<span style="color: rgb(248, 248, 242); font-weight: 400;"><span style="color: rgb(220, 198, 224); font-weight: 400;">public</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt; <span style="color: rgb(0, 224, 224); font-weight: 400;">Divide</span>(<span style="color: rgb(245, 171, 53); font-weight: 400;"><span style="color: rgb(245, 171, 53); font-weight: 400;">int</span> numerator, <span style="color: rgb(245, 171, 53); font-weight: 400;">int</span> denominator</span>)</span>
+{
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">if</span> (denominator == <span style="color: rgb(245, 171, 53); font-weight: 400;">0</span>)
+        <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt;.Failure(<span style="color: rgb(171, 227, 56); font-weight: 400;">"Cannot divide by zero."</span>);
+    
+    <span style="color: rgb(220, 198, 224); font-weight: 400;">return</span> Result&lt;<span style="color: rgb(245, 171, 53); font-weight: 400;">int</span>&gt;.Success(numerator / denominator);
+}
+
+<span style="color: rgb(212, 208, 171); font-weight: 400;">// Composition with the extension methods:</span>
+<span style="color: rgb(220, 198, 224); font-weight: 400;">var</span> divisionResult = ParseNumber(<span style="color: rgb(171, 227, 56); font-weight: 400;">"10"</span>)
+    .Bind(num =&gt; Divide(num, <span style="color: rgb(245, 171, 53); font-weight: 400;">2</span>));
+
+divisionResult.OnSuccess(<span style="color: rgb(220, 198, 224); font-weight: 400;">value</span> =&gt;
+{
+    Console.WriteLine(<span style="color: rgb(171, 227, 56); font-weight: 400;">$"Division succeeded. Result: <span style="color: rgb(171, 227, 56); font-weight: 400;">{<span style="color: rgb(220, 198, 224); font-weight: 400;">value</span>}</span>"</span>);
+})
+.OnFailure(error =&gt;
+{
+    Console.WriteLine(<span style="color: rgb(171, 227, 56); font-weight: 400;">$"Operation failed. Reason: <span style="color: rgb(171, 227, 56); font-weight: 400;">{error}</span>"</span>);
+});
+</pre>        
+
+        In this flow:
+        <ul>
+            <li>If ParseNumber("10") fails, the entire chain fails immediately, and Divide never gets called.</li>
+            <li>If ParseNumber("10") succeeds, then we call Divide(num, 2).</li>
+            <li>Finally, we handle success or failure in a unified way.</li>
+        </ul>
+
+        <br>
+        <h3>Benefits of the Result Pattern</h3>
+        <ol>
+            <li><b>Explicit Error Handling</b><br>
+                Forces calling code to handle success/failure cases consciously, reducing the chance of unhandled exceptions or null checks.</li>
+            <li><b>Cleaner Domain Logic</b><br>
+                You can contain error details within domain-specific Result objects, making domain logic more readable and robust.</li>
+            <li><b>Testability</b><br>
+                Unit tests become simpler because you can pass in known success or failure Result objects to test how your code reacts.</li>
+            <li><b>No Exception Overhead for Expected Failures</b><br>
+                While exceptions are essential for truly exceptional situations, many “failures” are actually part of normal business logic (e.g., “user not found”). Returning Result avoids the overhead and confusion of repeated try/catch blocks.</li>
+        </ol>
+
+
+        <br>
+        <h3>Resources</h3>
+        [1] FluentResults Github repository [<a href="https://github.com/altmann/FluentResults">Link</a>]
+
+
+    </div>
+
+
+    <!-- JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        Holder.addTheme('thumb', {
+            bg: '#55595c',
+            fg: '#eceeef',
+            text: 'Thumbnail'
+        });
+    </script>
+
+</body>
+
+</html>
